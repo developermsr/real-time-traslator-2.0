@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef, useCallback } from 'react';
 
 // Add types for Speech Recognition API to fix TypeScript errors.
@@ -52,7 +51,7 @@ interface SpeechRecognitionHook {
   finalTranscript: string;
   interimTranscript: string;
   isListening: boolean;
-  startListening: () => void;
+  startListening: (options?: { reset?: boolean }) => void;
   stopListening: () => void;
   isSupported: boolean;
 }
@@ -133,15 +132,17 @@ export const useSpeechRecognition = (): SpeechRecognitionHook => {
     };
   }, []);
   
-  const startListening = useCallback(() => {
+  const startListening = useCallback((options?: { reset?: boolean }) => {
     if (recognitionRef.current && !isListening) {
-      // Reset transcript for a new session on manual start
-      setFinalTranscript('');
-      setInterimTranscript('');
+      if (options?.reset) {
+        setFinalTranscript('');
+        setInterimTranscript('');
+      }
       manualStopRef.current = false;
       try {
         recognitionRef.current.start();
       } catch (error) {
+        // This can happen if start() is called while already starting
         console.error("Error starting speech recognition:", error);
       }
     }

@@ -15,6 +15,8 @@ const App: React.FC = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [context, setContext] = useState<string>('');
+  const [sessionActive, setSessionActive] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
 
   const {
     finalTranscript,
@@ -30,7 +32,26 @@ const App: React.FC = () => {
     setSpanishText('');
     setLastProcessedText('');
     setError(null);
-    startListening();
+    setSessionActive(true);
+    setIsPaused(false);
+    startListening({ reset: true });
+  };
+  
+  const handleStop = () => {
+    stopListening();
+    setSessionActive(false);
+    setIsPaused(false);
+  };
+
+  const handleTogglePause = () => {
+    if (isPaused) {
+      // Resuming
+      startListening({ reset: false });
+    } else {
+      // Pausing
+      stopListening();
+    }
+    setIsPaused(!isPaused);
   };
 
   const processTranscript = useCallback(async (transcript: string) => {
@@ -111,7 +132,7 @@ const App: React.FC = () => {
             placeholder="Provide context for the AI to use in its answers. e.g., 'My name is Jane and I am a marine biologist.'"
             value={context}
             onChange={(e) => setContext(e.target.value)}
-            disabled={isListening}
+            disabled={sessionActive}
             aria-label="AI Context Input"
           />
         </div>
@@ -129,10 +150,13 @@ const App: React.FC = () => {
       <footer className="p-4 border-t border-gray-700 bg-gray-800/50 backdrop-blur-sm">
         {error && <p className="text-center text-red-400 mb-2">{error}</p>}
         <Controls
+          sessionActive={sessionActive}
           isListening={isListening}
+          isPaused={isPaused}
           isProcessing={isProcessing}
           onStart={handleStart}
-          onStop={stopListening}
+          onStop={handleStop}
+          onTogglePause={handleTogglePause}
         />
       </footer>
     </div>

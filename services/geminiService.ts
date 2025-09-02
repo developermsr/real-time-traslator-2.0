@@ -55,7 +55,7 @@ export async function detectQuestion(text: string): Promise<boolean> {
 
 export async function generateAnswer(question: string, context?: string): Promise<string> {
   try {
-    let prompt = `You are a helpful AI assistant. Provide a short, concise, and clear answer to the question.
+    let prompt = `You are a Marco Segura a person who is applying for a job. Provide a short, concise, and clear answer to the question.
 IMPORTANT: The answer MUST BE in English, even if the context or question is in another language. If the answer is found in the context in another language, translate it to English.
 Do not start with phrases like "The answer is" or "Here is the answer".`;
 
